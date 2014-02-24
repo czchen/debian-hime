@@ -90,3 +90,15 @@ Description: support library to use Chewing in HIME
  .
  This package is the support library to use chewing in HIME.
 
+Package: hime-dbg
+Section: debug
+Architecture: any
+Depends: hime (= ${binary:Version}), ${misc:Depends}
+Description: GTK+ based input method for Chinese users - debug files
+ HIME Input Method Editor is a input method platform, which is forked
+ from the famous gcin input method.
+ .
+ This package contains only GTK2 immodule. For GTK3 and Qt4 immodule,
+ please install correspondence packages.
+ .
+ This package contains debug symbols which are useful for debug.

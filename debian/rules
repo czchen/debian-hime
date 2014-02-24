@@ -29,3 +29,6 @@ override_dh_installchangelogs:
 
 override_dh_makeshlibs:
 	dh_makeshlibs -n
+
+override_dh_strip:
+	dh_strip --dbg-package=hime-dbg
