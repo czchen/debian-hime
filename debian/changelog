@@ -1,4 +1,4 @@
-hime (0.9.10-2) UNRELEASED; urgency=medium
+hime (0.9.10-2) unstable; urgency=medium
 
   [ ChangZhuo Chen (陳昌倬) ]
   * Change priority to extra because hime depends on libpango1.0-0, which is
@@ -8,7 +8,7 @@ hime (0.9.10-2) UNRELEASED; urgency=medium
   [ Yao Wei ]
   * Fix FTBFS on kfreebsd-* (Closes: #739735)
 
- -- ChangZhuo Chen (陳昌倬) <czchen@gmail.com>  Mon, 24 Feb 2014 12:18:51 +0800
+ -- ChangZhuo Chen (陳昌倬) <czchen@gmail.com>  Mon, 24 Feb 2014 22:45:47 +0800
 
 hime (0.9.10-1) unstable; urgency=medium
 
