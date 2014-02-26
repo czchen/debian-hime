@@ -1,0 +1,36 @@
+Description: Check return value of getenv("HOME")
+Author: ChangZhuo Chen (陳昌倬) <czchen@gmail.com>
+Bug-Debian: http://bugs.debian.org/716028
+Forwarded: https://github.com/hime-ime/hime/pull/488
+Last-Update: <2014-02-26>
+--- hime-0.9.10.orig/src/hime-conf.c
++++ hime-0.9.10/src/hime-conf.c
+@@ -34,7 +34,10 @@ void init_TableDir()
+ 
+ void get_hime_dir(char *tt)
+ {
+-    strcpy(tt,(char *)getenv("HOME"));
++    char *home = getenv("HOME");
++    if (!home)
++      home = "";
++    strcpy(tt,home);
+     strcat(tt,"/.config/hime");
+ }
+ 
+--- hime-0.9.10.orig/src/hime-setup.c
++++ hime-0.9.10/src/hime-setup.c
+@@ -135,10 +135,13 @@ static void cb_ts_export()
+ static void ts_import(const gchar *selected_filename)
+ {
+    char cmd[256];
++   char *home = getenv("HOME");
++   if (!home)
++      home = "";
+    if (inmd[default_input_method].method_type==method_type_TSIN) {
+      snprintf(cmd, sizeof(cmd),
+         "cd %s/.config/hime && "HIME_BIN_DIR"/hime-tsd2a32 %s > tmpfile && cat %s >> tmpfile && "HIME_BIN_DIR"/hime-tsa2d32 tmpfile %s",
+-        getenv("HOME"), tsin32_f, selected_filename, tsin32_f);
++        home, tsin32_f, selected_filename, tsin32_f);
+      int res = system(cmd);
+      res = 0;
+      create_result_win(res, cmd);
