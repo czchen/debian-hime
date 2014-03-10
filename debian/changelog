@@ -1,3 +1,9 @@
+hime (0.9.10-3) unstable; urgency=medium
+
+  * Check return value of getenv("HOME") (Closes: #716028)
+
+ -- ChangZhuo Chen (陳昌倬) <czchen@gmail.com>  Mon, 10 Mar 2014 18:07:38 +0800
+
 hime (0.9.10-2) unstable; urgency=medium
 
   [ ChangZhuo Chen (陳昌倬) ]
