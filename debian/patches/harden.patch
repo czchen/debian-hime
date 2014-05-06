@@ -1,0 +1,498 @@
+Description: Hardening build
+---
+Forwarded: https://github.com/hime-ime/hime/pull/489
+--- hime-0.9.10.orig/configure
++++ hime-0.9.10/configure
+@@ -495,6 +495,8 @@ echo "himelibdir=\$(libdir)/hime" >> con
+ echo "includedir=\$(DESTDIR)$includedir" >> config.mak
+ echo "LDFLAGS_ENV=$LDFLAGS" >> config.mak
+ echo "LDFLAGS=$LDFLAGS -Wl,--as-needed -lX11 -lm" >> config.mak
++echo "CFLAGS=$CFLAGS $CPPFLAGS" >> config.mak
++echo "CXXFLAGS=$CXXFLAGS $CPPFLAGS" >> config.mak
+ if [ $FREEBSD -eq 0 ]; then
+ 	echo "LDFLAGS+=$GTKLDFLAGS -lX11 -ldl" >> config.mak
+ else
+--- hime-0.9.10.orig/data/Makefile
++++ hime-0.9.10/data/Makefile
+@@ -4,7 +4,7 @@ SRC_DIR       = ../src
+ IM_CLIENT_DIR = $(SRC_DIR)/im-client
+ 
+ .SUFFIXES:	.kbmsrc .kbm .cin .gtab
+-CFLAGS= -DUNIX=1 $(WALL) $(OPTFLAGS) $(GTKINC) -I$(SRC_DIR)
++CFLAGS+= -DUNIX=1 $(WALL) $(OPTFLAGS) $(GTKINC) -I$(SRC_DIR)
+ export HIME_NO_RELOAD=
+ 
+ DATA=pho.tab2 tsin32.idx gtab.list \
+@@ -83,11 +83,11 @@ pin-juyin.xlt: $(PIN_JUYIN) pin-juyin.sr
+ 
+ extr1:	extr1.c
+ 	@echo "building $@ ..."
+-	@$(CC) $(CFLAGS) $< $(SRC_DIR)/util.o $(SRC_DIR)/locale.o -o $@ $(LDFLAGS)
++	$(CC) $(CFLAGS) $< $(SRC_DIR)/util.o $(SRC_DIR)/locale.o -o $@ $(LDFLAGS)
+ 
+ t2s-file:	t2s-file.c
+ 	@echo "building $@ ..."
+-	@$(CC) $(CFLAGS) $< $(SRC_DIR)/util.o $(SRC_DIR)/locale.o -o $@ $(LDFLAGS)
++	$(CC) $(CFLAGS) $< $(SRC_DIR)/util.o $(SRC_DIR)/locale.o -o $@ $(LDFLAGS)
+ 
+ tsin-1.src:	extr1
+ 	./extr1 > $@
+--- hime-0.9.10.orig/src/IMdkit/lib/Makefile
++++ hime-0.9.10/src/IMdkit/lib/Makefile
+@@ -1,7 +1,7 @@
+ include ../../../config.mak
+ 
+ #CFLAGS =  -c -O2 -fno-strength-reduce -Dlinux -D__i386__ -D_POSIX_C_SOURCE=199309L -D_POSIX_SOURCE -D_XOPEN_SOURCE=500L -D_BSD_SOURCE -D_SVID_SOURCE   -DFUNCPROTO=15 -DNARROWPROTO   -DUNIXCONN -DTCPCONN -DXIM_t -DTRANS_SERVER
+-CFLAGS =  -c $(OPTFLAGS) -fno-strength-reduce -DXIM_t -DTRANS_SERVER
++CFLAGS +=  -c $(OPTFLAGS) -fno-strength-reduce -DXIM_t -DTRANS_SERVER
+ ifeq ($(FREEBSD), 0)
+   INC = -I../include -I/usr/X11R6/include
+ else
+@@ -21,7 +21,7 @@ libXimd.a: $(OBJ)
+ 
+ .c.o:
+ 	@echo "  $< -> $@"
+-	@$(CC) $(CPPFLAGS) $(CFLAGS) $(INC) -c $<
++	$(CC) $(CPPFLAGS) $(CFLAGS) $(INC) -c $<
+ 
+ clean:
+ 	@echo "clean up"
+--- hime-0.9.10.orig/src/Makefile
++++ hime-0.9.10/src/Makefile
+@@ -137,22 +137,22 @@ PROGS_CV  = kbmcv pin-juyin
+ 
+ .cpp.o:
+ 	@echo "  $< -> $@"
+-	@$(CCX) $(CPPFLAGS) $(CFLAGS) -c $<
++	$(CCX) $(CPPFLAGS) $(CFLAGS) -c $<
+ .c.o:
+ 	@echo "  $< -> $@"
+-	@$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
++	$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
+ .c.pico:
+ 	@echo "  $< -> $@"
+-	@$(CC) $(CPPFLAGS) $(CFLAGS) -c -fpic -o $@ $<
++	$(CC) $(CPPFLAGS) $(CFLAGS) -c -fpic -o $@ $<
+ .cpp.pico:
+ 	@echo "  $< -> $@"
+-	@$(CCX) $(CPPFLAGS) $(CFLAGS) -c -fpic -o $@ $<
++	$(CCX) $(CPPFLAGS) $(CFLAGS) -c -fpic -o $@ $<
+ .c.E:
+ 	@echo "  $< -> $@"
+-	@$(CC) $(CPPFLAGS) $(CFLAGS) -E -o $@ $<
++	$(CC) $(CPPFLAGS) $(CFLAGS) -E -o $@ $<
+ .cpp.E:
+ 	@echo "  $< -> $@"
+-	@$(CCX) $(CPPFLAGS) $(CFLAGS) -E -o $@ $<
++	$(CCX) $(CPPFLAGS) $(CFLAGS) -E -o $@ $<
+ 
+ 
+ all: $(PROGS) $(PROGS_SYM) $(DATA) $(PROGS_CV)
+@@ -173,28 +173,28 @@ im-client/libhime-im-client.so:
+ hime: $(OBJS) $(IMdkitLIB) $(OBJ_IMSRV)
+ 	@echo "linking $@ ..."
+ ifeq ($(FREEBSD), 0)
+-	@$(CCLD) $(EXTRA_LDFLAGS) $(gcc_ld_run_path) -o $@ $(OBJS) $(IMdkitLIB) $(OBJ_IMSRV) -lXtst $(LDFLAGS) -L/usr/X11R6/$(LIB)
++	$(CCLD) $(EXTRA_LDFLAGS) $(gcc_ld_run_path) -o $@ $(OBJS) $(IMdkitLIB) $(OBJ_IMSRV) -lXtst $(LDFLAGS) -L/usr/X11R6/$(LIB)
+ else
+-	@$(CCLD) $(EXTRA_LDFLAGS) $(gcc_ld_run_path) -o $@ $(OBJS) $(IMdkitLIB) $(OBJ_IMSRV) -lXtst $(LDFLAGS) -L/usr/local/$(LIB)
++	$(CCLD) $(EXTRA_LDFLAGS) $(gcc_ld_run_path) -o $@ $(OBJS) $(IMdkitLIB) $(OBJ_IMSRV) -lXtst $(LDFLAGS) -L/usr/local/$(LIB)
+ endif
+ 	@rm -f core.* vgcore.*
+ 
+ hime-tslearn: $(OBJS_TSLEARN) im-client/libhime-im-client.so
+ 	@echo "linking $@ ..."
+-	@$(CCLD) $(gcc_ld_run_path) -o $@ $^ -L./im-client -lhime-im-client $(LDFLAGS)
++	$(CCLD) $(gcc_ld_run_path) -o $@ $^ -L./im-client -lhime-im-client $(LDFLAGS)
+ 
+ hime-ts-edit: $(OBJS_TS_EDIT) im-client/libhime-im-client.so
+ 	@echo "linking $@ ..."
+-	@$(CCLD) $(gcc_ld_run_path) -o $@ $^ -L./im-client -lhime-im-client $(LDFLAGS)
++	$(CCLD) $(gcc_ld_run_path) -o $@ $^ -L./im-client -lhime-im-client $(LDFLAGS)
+ 
+ hime-juyin-learn: $(OBJS_JUYIN_LEARN)
+ 	@echo "linking $@ ..."
+-	@$(CCLD) -o $@ $^ $(LDFLAGS)
++	$(CCLD) -o $@ $^ $(LDFLAGS)
+ 	@rm -f core.*
+ 
+ hime-sim2trad: $(OBJS_hime-sim2trad)
+ 	@echo "linking $@ ..."
+-	@$(CC) $(gcc_ld_run_path) -o $@ $^ $(LDFLAGS)
++	$(CC) $(gcc_ld_run_path) -o $@ $^ $(LDFLAGS)
+ 	@rm -f core.*
+ 
+ hime-trad2sim:  hime-sim2trad
+@@ -203,48 +203,48 @@ hime-trad2sim:  hime-sim2trad
+ hime-setup: $(OBJS_hime_setup) im-client/libhime-im-client.so
+ 	@echo "linking $@ ..."
+ 	@rm -f core.*
+-	@$(CCLD) $(gcc_ld_run_path) -o $@ $^ -L./im-client -lhime-im-client $(LDFLAGS)
++	$(CCLD) $(gcc_ld_run_path) -o $@ $^ -L./im-client -lhime-im-client $(LDFLAGS)
+ 
+ hime-phoa2d: $(OBJS_hime-phoa2d) im-client/libhime-im-client.so
+ 	@echo "linking $@ ..."
+-	@$(CCLD) $(gcc_ld_run_path) -o $@ $^ -L./im-client -lhime-im-client $(LDFLAGS)
++	$(CCLD) $(gcc_ld_run_path) -o $@ $^ -L./im-client -lhime-im-client $(LDFLAGS)
+ 
+ hime-phod2a: $(OBJS_hime-phod2a)
+ 	@echo "linking $@ ..."
+-	@$(CCLD) -lX11 -o $@ $^ $(LDFLAGS)
++	$(CCLD) -lX11 -o $@ $^ $(LDFLAGS)
+ 
+ hime-tsa2d32:  $(OBJS_hime-tsa2d32) im-client/libhime-im-client.so
+ 	@echo "linking $@ ..."
+-	@$(CCLD) $(gcc_ld_run_path) -o $@ $^ -L./im-client -lhime-im-client $(LDFLAGS)
++	$(CCLD) $(gcc_ld_run_path) -o $@ $^ -L./im-client -lhime-im-client $(LDFLAGS)
+ 
+ #hime-tsd2a:
+ #	$(CCLD) -o $@ $(LDFLAGS)
+ 
+ hime-tsd2a32: $(OBJS_hime-tsd2a32)
+ 	@echo "linking $@ ..."
+-	@$(CCLD) -o $@ $^ $(LDFLAGS)
++	$(CCLD) -o $@ $^ $(LDFLAGS)
+ 
+ 
+ hime-cin2gtab: $(OBJS_cin2gtab)
+ 	@echo "linking $@ ..."
+-	@$(CCLD) -o $@ $^ $(LDFLAGS)
++	$(CCLD) -o $@ $^ $(LDFLAGS)
+ 	@rm -f data/*.gtab
+ 
+ hime-gtab2cin: $(OBJS_gtab2cin)
+ 	@echo "linking $@ ..."
+-	@$(CCLD) -o $@ $^ $(LDFLAGS)
++	$(CCLD) -o $@ $^ $(LDFLAGS)
+ 
+ hime-gtab-merge: $(OBJS_gtab_merge)
+ 	@echo "linking $@ ..."
+-	@$(CCLD) -o $@ $^ $(LDFLAGS)
++	$(CCLD) -o $@ $^ $(LDFLAGS)
+ 
+ kbmcv: $(OBJS_kbmcv)
+ 	@echo "linking $@ ..."
+-	@$(CCLD) -o $@ $^ $(LDFLAGS)
++	$(CCLD) -o $@ $^ $(LDFLAGS)
+ 
+ hime-gb-toggle: $(OBJS_hime_gb_toggle) im-client/libhime-im-client.so
+ 	@echo "linking $@ ..."
+-	@$(CCLD) $(gcc_ld_run_path) -o $@ $^ -L./im-client -lhime-im-client $(LDFLAGS)
++	$(CCLD) $(gcc_ld_run_path) -o $@ $^ -L./im-client -lhime-im-client $(LDFLAGS)
+ 
+ hime-kbm-toggle: hime-gb-toggle
+ 	ln -sf hime-gb-toggle $@
+@@ -260,15 +260,15 @@ hime-sim: hime-gb-toggle
+ 
+ hime-message: $(OBJS_hime_message) im-client/libhime-im-client.so
+ 	@echo "linking $@ ..."
+-	@$(CCLD) $(gcc_ld_run_path) -o $@ $^ -L./im-client -lhime-im-client $(LDFLAGS)
++	$(CCLD) $(gcc_ld_run_path) -o $@ $^ -L./im-client -lhime-im-client $(LDFLAGS)
+ 
+ pin-juyin: $(OBJS_pin_juyin)
+ 	@echo "linking $@ ..."
+-	@$(CCLD) -o $@ $^ $(LDFLAGS)
++	$(CCLD) -o $@ $^ $(LDFLAGS)
+ 
+ hime-tsin2gtab-phrase: $(OBJS_tsin2gtab_phrase)
+ 	@echo "linking $@ ..."
+-	@$(CCLD) -o $@ $^ $(LDFLAGS)
++	$(CCLD) -o $@ $^ $(LDFLAGS)
+ 
+ install:
+ 	install -d $(bindir)
+@@ -303,7 +303,7 @@ clean:
+ 
+ .depend:
+ 	@echo "building $@ ..."
+-	@$(CCX) $(CPPFLAGS) $(CFLAGS) -MM *.c > $@
++	$(CCX) $(CPPFLAGS) $(CFLAGS) -MM *.c > $@
+ 
+ 
+ 
+--- hime-0.9.10.orig/src/gtk-im/Makefile
++++ hime-0.9.10/src/gtk-im/Makefile
+@@ -22,17 +22,17 @@ CFLAGS = $(OPTFLAGS) $(EXTRA_INC) $(GTKI
+ 
+ .c.o:
+ 	@echo "  $< -> $@"
+-	@$(CC) -c -fPIC $(CPPFLAGS) $(CFLAGS) -o $@ $<
++	$(CC) -c -fPIC $(CPPFLAGS) $(CFLAGS) -o $@ $<
+ 
+ .c.E:
+ 	@echo "  $< -> $@"
+-	@$(CC) -E $(CPPFLAGS) $(CFLAGS) -o $@ $<
++	$(CC) -E $(CPPFLAGS) $(CFLAGS) -o $@ $<
+ 
+ all:	im-hime.so
+ 
+ im-hime.so:     $(OBJS) ../im-client/libhime-im-client.so
+ 	@echo "linking $@ ..."
+-	@$(CC) $(gcc_ld_run_path) $(SO_FLAGS) $(OBJS) -L../im-client -lhime-im-client -o $@ $(LDFLAGS)
++	$(CC) $(gcc_ld_run_path) $(SO_FLAGS) $(OBJS) -L../im-client -lhime-im-client -o $@ $(LDFLAGS)
+ 	@rm -f core.*
+ 
+ clean:
+@@ -55,6 +55,6 @@ install:
+ 
+ .depend:
+ 	@echo "building $@ ..."
+-	@$(CC) $(CPPFLAGS) $(CFLAGS) -MM *.c > $@
++	$(CC) $(CPPFLAGS) $(CFLAGS) -MM *.c > $@
+ 
+ include .depend
+--- hime-0.9.10.orig/src/gtk3-im/Makefile
++++ hime-0.9.10/src/gtk3-im/Makefile
+@@ -3,7 +3,7 @@ include ../../config.mak
+ OBJS = imhime.o gtkimcontexthime.o
+ GTK3IM=gtk-3.0/immodules
+ GTKINC=`pkg-config --cflags gtk+-3.0`
+-LDFLAGS=`pkg-config --libs gtk+-3.0`
++LDFLAGS+=`pkg-config --libs gtk+-3.0`
+ GTK3_LIBDIR=`pkg-config --variable=libdir gtk+-3.0`
+ GTK3_BINARY_VERSION=`pkg-config --variable=gtk_binary_version gtk+-3.0`
+ MODULEDIR=$(DESTDIR)/$(GTK3_LIBDIR)/gtk-3.0/$(GTK3_BINARY_VERSION)/immodules
+@@ -17,22 +17,22 @@ EXTRA_INC=-I/sw/include
+ endif
+ 
+ .SUFFIXES:	.c .o .E
+-CFLAGS = $(OPTFLAGS) $(EXTRA_INC) $(GTKINC) -I../im-client -I.. -DUNIX=1 \
++CFLAGS += $(OPTFLAGS) $(EXTRA_INC) $(GTKINC) -I../im-client -I.. -DUNIX=1 \
+ -I../IMdkit/include -DCLIENT_LIB=1 -DMAC_OS=$(MAC_OS) -DFREEBSD=$(FREEBSD)
+ 
+ .c.o:
+ 	@echo "  $< -> $@"
+-	@$(CC) -c -fPIC $(CPPFLAGS) $(CFLAGS) -o $@ $<
++	$(CC) -c -fPIC $(CPPFLAGS) $(CFLAGS) -o $@ $<
+ 
+ .c.E:
+ 	@echo "  $< -> $@"
+-	@$(CC) -E $(CPPFLAGS) $(CFLAGS) -o $@ $<
++	$(CC) -E $(CPPFLAGS) $(CFLAGS) -o $@ $<
+ 
+ all:	im-hime.so
+ 
+ im-hime.so:     $(OBJS) ../im-client/libhime-im-client.so
+ 	@echo "linking $@ ..."
+-	@$(CC) $(gcc_ld_run_path) $(SO_FLAGS) $(OBJS) -L../im-client -lhime-im-client -o $@ $(LDFLAGS)
++	$(CC) $(gcc_ld_run_path) $(SO_FLAGS) $(OBJS) -L../im-client -lhime-im-client -o $@ $(LDFLAGS)
+ 	@rm -f core.*
+ 
+ clean:
+@@ -55,6 +55,6 @@ install:
+ 
+ .depend:
+ 	@echo "building $@ ..."
+-	@$(CC) $(CPPFLAGS) $(CFLAGS) -MM *.c > $@
++	$(CC) $(CPPFLAGS) $(CFLAGS) -MM *.c > $@
+ 
+ include .depend
+--- hime-0.9.10.orig/src/im-client/Makefile
++++ hime-0.9.10/src/im-client/Makefile
+@@ -5,7 +5,7 @@ SOFILEVER=libhime-im-client.so.1.2.4
+ 
+ .SUFFIXES:      .c .o .E .cpp
+ WALL=-Wall
+-CFLAGS= -DUNIX=1 $(WALL) $(OPTFLAGS) -I. -I.. -I../IMdkit/include $(GTKINC) \
++CFLAGS+= -DUNIX=1 $(WALL) $(OPTFLAGS) -I. -I.. -I../IMdkit/include $(GTKINC) \
+         -DCLIENT_LIB=1 -DHIME_BIN_DIR=\"$(HIME_BIN_DIR)\" -DUNIX=1 \
+         -DHIME_TABLE_DIR=\"$(HIME_TABLE_DIR)\" \
+         -DFREEBSD=$(FREEBSD) -fPIC
+@@ -13,23 +13,23 @@ OBJS = hime-im-client.o hime-send.o im-a
+ 
+ .cpp.E:
+ 	@echo "  $< -> $@"
+-	@$(CC) $(CPPFLAGS) $(CFLAGS) -E -o $@ $<
++	$(CC) $(CPPFLAGS) $(CFLAGS) -E -o $@ $<
+ 
+ .c.o:
+ 	@echo "  $< -> $@"
+-	@$(CC) -c $(CPPFLAGS) $(CFLAGS) $<
++	$(CC) -c $(CPPFLAGS) $(CFLAGS) $<
+ 
+ .cpp.o:
+ 	@echo "  $< -> $@"
+-	@$(CC) -x c -c $(CPPFLAGS) $(CFLAGS) $<
++	$(CC) -x c -c $(CPPFLAGS) $(CFLAGS) $<
+ 
+ $(SOFILEVER):   $(OBJS)
+ 	@echo "linking $@ ..."
+ # TODO: Drop g_get_tmp_dir() and -lglib-2.0
+ ifeq ($(FREEBSD), 0)
+-	@$(CC) $(SO_FLAGS) -Wl,-soname,libhime-im-client.so.1 $(OBJS) -lX11 -lglib-2.0 -o $@ -L/usr/X11R6/lib
++	$(CC) $(SO_FLAGS) -Wl,-soname,libhime-im-client.so.1 $(OBJS) -lX11 -lglib-2.0 -o $@ -L/usr/X11R6/lib
+ else
+-	@$(CC) $(SO_FLAGS) -Wl,-soname,libhime-im-client.so.1 $(OBJS) -lX11 -lglib-2.0 -o $@ -L/usr/local/lib
++	$(CC) $(SO_FLAGS) -Wl,-soname,libhime-im-client.so.1 $(OBJS) -lX11 -lglib-2.0 -o $@ -L/usr/local/lib
+ endif
+ 	ln -sf $(SOFILEVER) $(SOFILE)
+ 	ln -sf $(SOFILEVER) $(SOFILE).1
+@@ -45,26 +45,26 @@ install:
+ 
+ hime-conf.o: ../hime-conf.c
+ 	@echo "  $^ -> $@"
+-	@$(CCX) -c $(CPPFLAGS) $(CFLAGS) -o $@ $<
++	$(CCX) -c $(CPPFLAGS) $(CFLAGS) -o $@ $<
+ 
+ util.o: ../util.c
+ 	@echo "  $^ -> $@"
+-	@$(CCX) -c $(CPPFLAGS) $(CFLAGS) -o $@ $<
++	$(CCX) -c $(CPPFLAGS) $(CFLAGS) -o $@ $<
+ 
+ im-addr.o: ../im-addr.c
+ 	@echo "  $^ -> $@"
+-	@$(CCX) -c $(CPPFLAGS) $(CFLAGS) -o $@ $<
++	$(CCX) -c $(CPPFLAGS) $(CFLAGS) -o $@ $<
+ 
+ hime-crypt-fpic.o: ../hime-crypt.c
+ 	@echo "  $^ -> $@"
+-	@$(CCX) -c $(CPPFLAGS) $(CFLAGS) -o $@ $<
++	$(CCX) -c $(CPPFLAGS) $(CFLAGS) -o $@ $<
+ 
+ clean:
+ 	@echo "clean up"
+-	@rm -f *.o *.so *.so.* *~ *.E *.db tags core.* .depend
++	rm -f *.o *.so *.so.* *~ *.E *.db tags core.* .depend
+ 
+ .depend:
+ 	@echo "building $@ ..."
+-	@$(CCX) $(CPPFLAGS) $(CFLAGS) -MM *.c > $@
++	$(CCX) $(CPPFLAGS) $(CFLAGS) -MM *.c > $@
+ 
+ include .depend
+--- hime-0.9.10.orig/src/modules/Makefile
++++ hime-0.9.10/src/modules/Makefile
+@@ -19,18 +19,18 @@ all:	$(HIME_MODULE)
+ anthy_module_so = anthy.pico
+ anthy-module.so: $(anthy_module_so)
+ 	@echo "linking $@ ..."
+-	@$(CCLD) $(SO_FLAGS) -o $@ $(anthy_module_so) $(LDFLAGS) -lanthy
++	$(CCLD) $(SO_FLAGS) -o $@ $(anthy_module_so) $(LDFLAGS) -lanthy
+ 
+ intcode_module_so = intcode.pico win-int.pico
+ intcode-module.so: $(intcode_module_so)
+ 	@echo "linking $@ ..."
+-	@$(CCLD) $(SO_FLAGS) -o $@ $(intcode_module_so) $(LDFLAGS)
++	$(CCLD) $(SO_FLAGS) -o $@ $(intcode_module_so) $(LDFLAGS)
+ 
+ chewing_module_obj = chewing-conf.pico
+ chewing_module_so = chewing.pico hime-setup-chewing.pico
+ chewing-module.so: $(chewing_module_obj) $(chewing_module_so)
+ 	@echo "linking $@ ..."
+-	@$(CCLD) $(SO_FLAGS) -o $@ $(chewing_module_obj) $(chewing_module_so) $(LDFLAGS) $(shell pkg-config --cflags --libs chewing)
++	$(CCLD) $(SO_FLAGS) -o $@ $(chewing_module_obj) $(chewing_module_so) $(LDFLAGS) $(shell pkg-config --cflags --libs chewing)
+ 
+ install:
+ 	install $(HIME_MODULE) $(himelibdir)
+--- hime-0.9.10.orig/src/qt-im/Makefile
++++ hime-0.9.10/src/qt-im/Makefile
+@@ -3,28 +3,28 @@ QT=qt3
+ QTIM=$(QT)/plugins/inputmethods
+ IMMODULES=$(libdir)/$(QTIM)
+ INCS=-I../im-client -I/usr/include `pkg-config --cflags qt-mt` -I/usr/include/Xft2/X11/Xft  -I/usr/include/fontconfig -I/usr/include/freetype2
+-CXXFLAGS=$(OPTFLAGS) $(INCS) -Wall -D_REENTRANT -DUNIX=1 -fPIC  -DQT_THREAD_SUPPORT -DQT_PLUGIN -DQT_SHARED -DQT_NO_DEBUG
++CXXFLAGS+=$(OPTFLAGS) $(INCS) -Wall -D_REENTRANT -DUNIX=1 -fPIC  -DQT_THREAD_SUPPORT -DQT_PLUGIN -DQT_SHARED -DQT_NO_DEBUG
+ OBJS=qhimeinputcontextplugin.o qhimeinputcontextplugin_my.o qhimeinputcontext.o qhimeinputcontext_x11.o
+ .SUFFIXES:	.c .cpp .a .so .E .h
+-LDFLAGS=$(LDFLAGS_ENV) -L../im-client -lhime-im-client -Wl,-rpath,$(himelibdir) `pkg-config qt-mt --libs`
++LDFLAGS+=$(LDFLAGS_ENV) -L../im-client -lhime-im-client -Wl,-rpath,$(himelibdir) `pkg-config qt-mt --libs`
+ all:	im-hime.so
+ 
+ .cpp.E:
+ 	@echo "  $< -> $@"
+-	@$(CXX) -E $(CFLAGS) $(INCS) $< > $@
++	$(CXX) -E $(CFLAGS) $(INCS) $< > $@
+ 
+ .cpp.o:
+ 	@echo "  $< -> $@"
+-	@$(CXX) -c -o $@ $(CXXFLAGS) $<
++	$(CXX) -c -o $@ $(CXXFLAGS) $<
+ 
+ .h.o:
+ 	@echo "  $< -> $@"
+ 	@$(QT3_MOC_PATH) $< -o $<_moc.cpp
+-	@$(CXX) -c -pipe $(CXXFLAGS) $<_moc.cpp -o $@
++	$(CXX) -c -pipe $(CXXFLAGS) $<_moc.cpp -o $@
+ 
+ im-hime.so: $(OBJS)
+ 	@echo "linking $@ ..."
+-	@$(CXX) $(gcc_ld_run_path) -fno-exceptions -shared -o $@ $(OBJS) $(LDFLAGS)
++	$(CXX) $(gcc_ld_run_path) -fno-exceptions -shared -o $@ $(OBJS) $(LDFLAGS)
+ 	@rm -f core.*
+ 
+ install:
+--- hime-0.9.10.orig/src/qt4-im/Makefile
++++ hime-0.9.10/src/qt4-im/Makefile
+@@ -5,24 +5,24 @@ ifeq ($(FREEBSD), 0)
+ else
+   INCS=-I../im-client -I/usr/local/include `pkg-config QtCore QtGui --cflags`
+ endif
+-CXXFLAGS=$(OPTFLAGS) $(INCS) -Wall -D_REENTRANT -DUNIX=1 -fPIC  -DQT4 -DQT_SHARED \
++CXXFLAGS+=$(OPTFLAGS) $(INCS) -Wall -D_REENTRANT -DUNIX=1 -fPIC  -DQT4 -DQT_SHARED \
+ -DQT_IMMODULE -DPIC
+ OBJS= moc_hime-qt.o hime-qt.o im-hime-qt.o hime-imcontext-qt.o
+ .SUFFIXES:	.c .cpp .a .so .E .h
+-LDFLAGS=$(LDFLAGS_ENV) -L../im-client -lhime-im-client `pkg-config QtCore QtGui --libs`
++LDFLAGS+=$(LDFLAGS_ENV) -L../im-client -lhime-im-client `pkg-config QtCore QtGui --libs`
+ all:    im-hime.so
+ 
+ .cpp.E:
+ 	@echo "  $< -> $@"
+-	@$(CXX) -E $(CFLAGS) $(INCS) $< > $@
++	$(CXX) -E $(CFLAGS) $(INCS) $< > $@
+ 
+ .cpp.o:
+ 	@echo "  $< -> $@"
+-	@$(CXX) -c -o $@ $(CXXFLAGS) $<
++	$(CXX) -c -o $@ $(CXXFLAGS) $<
+ 
+ moc_hime-qt.cpp:	hime-qt.h
+ 	@echo "  $< -> $@"
+-	@$(QT4_MOC_PATH) $< -o moc_hime-qt.cpp
++	$(QT4_MOC_PATH) $< -o moc_hime-qt.cpp
+ 
+ im-hime.so: $(OBJS)
+ 	@echo "linking $@ ..."
+@@ -40,6 +40,6 @@ clean:
+ 
+ .depend:
+ 	@echo "building $@ ..."
+-	@$(CXX) $(CXXFLAGS) -MM *.cpp > $@
++	$(CXX) $(CXXFLAGS) -MM *.cpp > $@
+ 
+ include .depend
+--- hime-0.9.10.orig/src/suffixes-rule
++++ hime-0.9.10/src/suffixes-rule
+@@ -2,25 +2,25 @@
+ 
+ .cpp.o:
+ 	@echo "  $< -> $@"
+-	@$(CCX) $(CPPFLAGS) $(CFLAGS) -c $<
++	$(CCX) $(CPPFLAGS) $(CFLAGS) -c $<
+ .c.o:
+ 	@echo "  $< -> $@"
+-	@$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
++	$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
+ .c.pico:
+ 	@echo "  $< -> $@"
+-	@$(CC) $(CPPFLAGS) $(CFLAGS) -c -fpic -o $@ $<
++	$(CC) $(CPPFLAGS) $(CFLAGS) -c -fpic -o $@ $<
+ .cpp.pico:
+ 	@echo "  $< -> $@"
+-	@$(CCX) $(CPPFLAGS) $(CFLAGS) -c -fpic -o $@ $<
++	$(CCX) $(CPPFLAGS) $(CFLAGS) -c -fpic -o $@ $<
+ .c.E:
+ 	@echo "  $< -> $@"
+-	@$(CC) $(CPPFLAGS) $(CFLAGS) -E -o $@ $<
++	$(CC) $(CPPFLAGS) $(CFLAGS) -E -o $@ $<
+ .cpp.E:
+ 	@echo "  $< -> $@"
+-	@$(CCX) $(CPPFLAGS) $(CFLAGS) -E -o $@ $<
++	$(CCX) $(CPPFLAGS) $(CFLAGS) -E -o $@ $<
+ 
+ 
+-CFLAGS= -DUNIX=1 $(WALL) $(OPTFLAGS) $(GTKINC) -I./IMdkit/include -I./im-client \
++CFLAGS+= -DUNIX=1 $(WALL) $(OPTFLAGS) $(GTKINC) -I./IMdkit/include -I./im-client \
+         -DHIME_TABLE_DIR=\"$(HIME_TABLE_DIR)\" \
+         -DHIME_OGG_DIR=\"$(HIME_OGG_DIR)\" \
+         -DDOC_DIR=\"$(DOC_DIR)\" \
