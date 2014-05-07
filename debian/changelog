@@ -1,3 +1,9 @@
+hime (0.9.10-4) unstable; urgency=medium
+
+  * Enable hardening build
+
+ -- ChangZhuo Chen (陳昌倬) <czchen@gmail.com>  Wed, 07 May 2014 23:03:18 +0800
+
 hime (0.9.10-3) unstable; urgency=medium
 
   * Check return value of getenv("HOME") (Closes: #716028)
