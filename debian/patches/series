@@ -2,3 +2,4 @@ keywords.patch
 fix-ftbfs-on-kfreebsd.diff
 getenv.patch
 harden.patch
+xserver64.patch
