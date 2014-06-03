@@ -1,3 +1,10 @@
+hime (0.9.10-5) unstable; urgency=medium
+
+  * Add debian/gbp.conf
+  * Conflicting struct declarations of HIME_client_handle_S (Closes: #750375)
+
+ -- ChangZhuo Chen (陳昌倬) <czchen@gmail.com>  Tue, 03 Jun 2014 19:21:44 +0800
+
 hime (0.9.10-4) unstable; urgency=medium
 
   * Enable hardening build
