@@ -10,12 +10,12 @@ ua_remove () {
 }
 
 case "$1" in
-    remove|upgrade|deconfigure)
+    remove|deconfigure)
         ua_remove all_ALL hime
         ua_remove zh_CN   hime
         ua_remove zh_TW   hime
 	;;
-    failed-upgrade)
+    failed-upgrade|upgrade)
 	;;
     *)
 	echo "prerm called with unknown argument \`$1'" >&2
