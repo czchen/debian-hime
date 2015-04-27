@@ -1,0 +1,15 @@
+files
+hime-anthy/
+hime-chewing/
+hime-data/
+hime-dbg/
+hime-dev/
+hime-gtk3-immodule/
+hime-qt4-immodule/
+hime-tables/
+hime/
+tmp/
+
+*.log
+*.substvars
+*.debhelper
