@@ -1,3 +1,14 @@
+hime (0.9.10-6) unstable; urgency=medium
+
+  [ ChangZhuo Chen (陳昌倬) ]
+  * Bump Standards-Version
+  * Don't remove alternative when upgrade
+
+  [ Yao Wei (魏銘廷) ]
+  * Add libappindicator dependency (Closes: #776883)
+
+ -- ChangZhuo Chen (陳昌倬) <czchen@gmail.com>  Mon, 27 Apr 2015 18:31:59 +0800
+
 hime (0.9.10-5) unstable; urgency=medium
 
   * Add debian/gbp.conf
