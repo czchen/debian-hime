@@ -1,3 +1,9 @@
+hime (0.9.10-7) unstable; urgency=medium
+
+  * Fix bashism in /bin/sh script. (Closes: #772236)
+
+ -- Shih-Yuan Lee (FourDollars) <fourdollars@gmail.com>  Tue, 28 Apr 2015 21:18:41 +0800
+
 hime (0.9.10-6) unstable; urgency=medium
 
   [ ChangZhuo Chen (陳昌倬) ]
