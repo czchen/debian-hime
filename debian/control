@@ -125,6 +125,7 @@ Description: Qt4 input method module with HIME as backend
 
 Package: hime-anthy
 Architecture: any
+Multi-Arch: same
 Depends: ${misc:Depends},
          ${shlibs:Depends},
          hime (>= ${source:Version}),
@@ -137,6 +138,7 @@ Description: support library to use Anthy in HIME
 
 Package: hime-chewing
 Architecture: any
+Multi-Arch: same
 Depends: ${misc:Depends},
          ${shlibs:Depends},
          hime (>= ${source:Version}),

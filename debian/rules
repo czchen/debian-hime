@@ -32,8 +32,8 @@ override_dh_auto_install:
 	make install DESTDIR=$(CURDIR)/debian/tmp
 
 	# workaround to move arch-dep tables to /usr/lib
-	mv debian/tmp/usr/share/hime/table debian/tmp/usr/lib/hime/
-	ln -s /usr/lib/hime/table debian/tmp/usr/share/hime/table
+	mv debian/tmp/usr/share/hime/table debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/hime/table
+	ln -s /usr/lib/$(DEB_HOST_MULTIARCH)/hime/table debian/tmp/usr/share/hime/table
 
 override_dh_installchangelogs:
 	dh_installchangelogs ChangeLog
@@ -46,4 +46,5 @@ override_dh_strip:
 
 override_dh_install:
 	dh_install \
+		--exclude=usr/share/doc/hime/ChangeLog \
 		--fail-missing
