@@ -4,3 +4,4 @@ getenv.patch
 harden.patch
 xserver64.patch
 bashism.patch
+himelibdir.patch
