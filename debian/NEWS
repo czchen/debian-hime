@@ -1,0 +1,6 @@
+hime (0.9.10-8) unstable; urgency=medium
+
+  The GTK2 immodule is separated from hime to support multi architecture. In
+  order to use HIME in GTK2, hime-gtk2-immodule must be installed.
+
+ -- ChangZhuo Chen (陳昌倬) <czchen@gmail.com>  Sun, 07 Jun 2015 22:42:17 +0800
