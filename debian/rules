@@ -31,6 +31,10 @@ override_dh_auto_configure:
 override_dh_auto_install:
 	make install DESTDIR=$(CURDIR)/debian/tmp
 
+	# workaround to move Qt4 module
+	mkdir -p $(CURDIR)/debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/qt4/plugins/inputmethods
+	mv $(CURDIR)/debian/tmp/usr/lib/qt4/plugins/inputmethods/im-hime.so $(CURDIR)/debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/qt4/plugins/inputmethods/im-hime.so
+
 	# workaround to move arch-dep tables to /usr/lib
 	mv debian/tmp/usr/share/hime/table debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/hime/table
 	ln -s /usr/lib/$(DEB_HOST_MULTIARCH)/hime/table debian/tmp/usr/share/hime/table
