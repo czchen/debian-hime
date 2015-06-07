@@ -1,0 +1,3 @@
+usr/lib/*/hime/hime*
+usr/lib/*/hime/intcode-module.so
+usr/lib/*/hime/libhime-im-client.so*
