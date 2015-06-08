@@ -1,4 +1,4 @@
-hime (0.9.10-8) UNRELEASED; urgency=medium
+hime (0.9.10-8) unstable; urgency=medium
 
   * Support Multi-Arch
     * Add --himelibdir
