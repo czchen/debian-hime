@@ -94,6 +94,8 @@ Multi-Arch: same
 Depends: ${misc:Depends},
          ${shlibs:Depends},
          hime (>= ${source:Version}),
+Breaks: hime (<< 0.9.10-8),
+Replaces: hime (<< 0.9.10-8),
 Description: GTK2 input method module with HIME as backend
  HIME Input Method Editor is a input method platform, which is forked
  from the famous gcin input method.
