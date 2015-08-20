@@ -8,12 +8,12 @@ CFLAGS= -DUNIX=1 $(WALL) $(OPTFLAGS) $(GTKINC) -I$(SRC_DIR)
 export HIME_NO_RELOAD=
 
 DATA=pho.tab2 tsin32.idx gtab.list \
-     cj.gtab ar30.gtab ar30-big.gtab pinyin.gtab jyutping.gtab cj5.gtab \
+     cj.gtab ar30.gtab ar30-big.gtab array40.gtab pinyin.gtab jyutping.gtab cj5.gtab \
      et.kbm et26.kbm zo.kbm pinyin.kbm dvorak.kbm mitac.kbm colemak.kbm \
      ibm.kbm tsin32 hsu.kbm pho-huge.tab2 simplex.gtab symbols.gtab russian.gtab \
      greek.gtab cj-punc.gtab latin-letters.gtab tsin-1.src pin-juyin.xlt \
      t2s.dat s2t.dat cj543.gtab s-tsin32 s-tsin32.idx s-pho.tab2 s-pho-huge.tab2 \
-     pinyin-no-tone.kbm simplex-punc.gtab hangul.gtab
+     pinyin-no-tone.kbm simplex-punc.gtab hangul.gtab vims.gtab
 
 DATAKEEP = symbol-table phrase.table phrase-ctrl.table
 
