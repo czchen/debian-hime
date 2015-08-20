@@ -208,7 +208,9 @@ is_empty (void)
 {
     if (!g_pChewingCtx)
         return FALSE;
-    return !chewing_buffer_Len (g_pChewingCtx) && chewing_zuin_Check (g_pChewingCtx);
+    int  nZuinLen = 0;
+    free(chewing_zuin_String (g_pChewingCtx, &nZuinLen));
+    return !chewing_buffer_Len (g_pChewingCtx) && !nZuinLen;
 }
 
 static gboolean 
@@ -368,8 +370,10 @@ hime_chewing_handler_default (ChewingContext *pCtx)
 static int 
 hime_chewing_wrapper_bs (ChewingContext *pCtx)
 {
-//  If zuin is present, let libchewing handles Backspace for removing last zuin
-    if (!chewing_zuin_Check (g_pChewingCtx))
+//  If zuin is present, force libchewing handles Backspace for removing last zuin
+    int  nZuinLen = 0;
+    free(chewing_zuin_String (g_pChewingCtx, &nZuinLen));
+    if (nZuinLen)
         return chewing_handle_Backspace (g_pChewingCtx);
     HIME_CHEWING_WRAPPER_FUNC (chewing_handle_Backspace);
 }
@@ -501,8 +505,6 @@ module_init_win (HIME_module_main_functions *pFuncs)
 
     g_pWinChewing = gtk_window_new (GTK_WINDOW_TOPLEVEL);
     gtk_window_set_has_resize_grip (GTK_WINDOW (g_pWinChewing), FALSE);
-
-    gtk_window_set_default_size (GTK_WINDOW (g_pWinChewing), 32, 12);
 
     gtk_widget_realize (g_pWinChewing);
     g_himeModMainFuncs.mf_set_no_focus (g_pWinChewing);
@@ -642,6 +644,9 @@ module_feedkey (int nKeyVal, int nKeyState)
     hime_label_clear (MAX_SEG_NUM);
 
     chewing_set_ShapeMode (g_pChewingCtx, g_himeModMainFuncs.mf_current_shape_mode());
+
+    if (nKeyState & (Mod1Mask|Mod4Mask|Mod5Mask|ControlMask))
+        return FALSE;
 
     if (!hime_key_filter (&nKeyVal))
         return FALSE;

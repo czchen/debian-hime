@@ -53,6 +53,9 @@ void toggle_symbol_table();
 
 gboolean old_capslock_on;
 
+extern gboolean key_press_alt;
+extern gboolean key_press_ctrl;
+
 #if TRAY_ENABLED
 int hime_tray_display;
 #endif
@@ -388,6 +391,7 @@ void hide_in_win(ClientState *cs)
     case method_type_MODULE:
       if (inmd[cs->in_method].mod_cb_funcs)
         module_cb1(cs)->module_hide_win();
+      hide_win_gtab();
       break;
     default:
       hide_win_gtab();
@@ -449,6 +453,7 @@ void show_in_win(ClientState *cs)
       if (!module_cb1(cs))
         return;
       module_cb1(cs)->module_show_win();
+      show_input_method_name_on_gtab();
       break;
     default:
       show_win_gtab();
@@ -509,6 +514,7 @@ void move_in_win(ClientState *cs, int x, int y)
     case method_type_MODULE:
       if (inmd[cs->in_method].mod_cb_funcs)
         module_cb1(cs)->module_move_win(x, y);
+        move_win_gtab(x, y);
       break;
     default:
       if (!cs->in_method)
@@ -978,7 +984,7 @@ gboolean init_in_method(int in_no)
       } else {
         return FALSE;
       }
-
+      show_input_method_name_on_gtab();
       break;
     }
     case method_type_EN:
@@ -1210,6 +1216,20 @@ void toggle_symbol_table()
 void destroy_phrase_save_menu();
 int hime_switch_keys_lookup(int key);
 
+gboolean check_key_press(KeySym key, u_int kev_state, gboolean return_value)
+{
+  if ((key==XK_Shift_L || key==XK_Shift_R) && key_press_alt) {
+    key_press_ctrl = FALSE;
+  } else if ((key==XK_Control_L || key==XK_Control_R) && key_press_ctrl) {
+    key_press_alt = FALSE;
+  } else {
+    key_press_alt = FALSE;
+    key_press_ctrl = FALSE;
+  }
+
+  return return_value;
+}
+
 // return TRUE if the key press is processed
 gboolean ProcessKeyPress(KeySym keysym, u_int kev_state)
 {
@@ -1227,12 +1247,12 @@ gboolean ProcessKeyPress(KeySym keysym, u_int kev_state)
   if (callback_str_buffer && strlen(callback_str_buffer)) {
     send_text(callback_str_buffer);
     callback_str_buffer[0]=0;
-    return TRUE;
+    return check_key_press(keysym, kev_state, TRUE);
   }
 
   if (force_preedit) {
     force_preedit=0;
-    return 1;
+    return check_key_press(keysym, kev_state, FALSE);
   }
 
   if (keysym == XK_space) {
@@ -1251,63 +1271,63 @@ gboolean ProcessKeyPress(KeySym keysym, u_int kev_state)
       }
 
       toggle_im_enabled();
-      return TRUE;
+      return check_key_press(keysym, kev_state, TRUE);
     }
   }
 
   if (keysym == XK_space && (kev_state & ShiftMask)) {
     if (last_keysym != XK_Shift_L && last_keysym != XK_Shift_R)
-      return FALSE;
+      return check_key_press(keysym, kev_state, FALSE);
 
     toggle_half_full_char();
 
-    return TRUE;
+    return check_key_press(keysym, kev_state, TRUE);
   }
 
 
   if ((kev_state & (Mod1Mask|ShiftMask)) == (Mod1Mask|ShiftMask)) {
     if (current_CS->im_state != HIME_STATE_DISABLED || hime_eng_phrase_enabled)
-      return feed_phrase(keysym, kev_state);
+      return check_key_press(keysym, kev_state, feed_phrase(keysym, kev_state));
     else
-      return 0;
+      return check_key_press(keysym, kev_state, FALSE);
   }
 
 //  dbg("state %x\n", kev_state);
   if ((kev_state & ControlMask) && (kev_state&(Mod1Mask|Mod5Mask))) {
     if (keysym == 'g' || keysym == 'r') {
       send_output_buffer_bak();
-      return TRUE;
+      return check_key_press(keysym, kev_state, TRUE);
     }
 
     if (!hime_enable_ctrl_alt_switch)
-      return FALSE;
+      return check_key_press(keysym, kev_state, FALSE);
 
     int kidx = hime_switch_keys_lookup(keysym);
     if (kidx < 0)
-      return FALSE;
+      return check_key_press(keysym, kev_state, FALSE);
 
     if (inmd[kidx].method_type == method_type_SYMBOL_TABLE) {
       toggle_symbol_table();
-      return TRUE;
+      return check_key_press(keysym, kev_state, TRUE);
     }
 
     if (!inmd[kidx].cname)
-      return FALSE;
+      return check_key_press(keysym, kev_state, FALSE);
 
     current_CS->im_state = HIME_STATE_CHINESE;
     init_in_method(kidx);
 
-    return TRUE;
+    return check_key_press(keysym, kev_state, TRUE);
   }
 
   last_keysym = keysym;
 
   if (current_CS->im_state == HIME_STATE_ENG_FULL && !(kev_state & (ControlMask|Mod1Mask))) {
-    return full_char_proc(keysym);
+    return check_key_press(keysym, kev_state, full_char_proc(keysym));
   }
 
   if (current_CS->im_state == HIME_STATE_DISABLED || current_CS->im_state == HIME_STATE_ENG_FULL) {
-    return FALSE;
+    return check_key_press(keysym, kev_state, FALSE);
   }
 
   if (!current_CS->b_hime_protocol) {
@@ -1316,7 +1336,7 @@ gboolean ProcessKeyPress(KeySym keysym, u_int kev_state)
         ((keysym == XK_Shift_L || keysym == XK_Shift_R)
                      && (kev_state & ControlMask))) {
        cycle_next_in_method();
-       return TRUE;
+       return check_key_press(keysym, kev_state, TRUE);
     }
   }
 
@@ -1328,25 +1348,33 @@ gboolean ProcessKeyPress(KeySym keysym, u_int kev_state)
 
   if (kev_state & ControlMask) {
     if (feed_phrase(keysym, kev_state))
-      return TRUE;
+      return check_key_press(keysym, kev_state, TRUE);
   }
 
   switch(current_method_type()) {
     case method_type_PHO:
-      return feedkey_pho(keysym, kev_state);
+      return check_key_press(keysym, kev_state, feedkey_pho(keysym, kev_state));
 #if USE_TSIN
     case method_type_TSIN:
-      return feedkey_pp(keysym, kev_state);
+      return check_key_press(keysym, kev_state, feedkey_pp(keysym, kev_state));
 #endif
     case method_type_MODULE:
+    {
       if (!module_cb())
-        return FALSE;
-      return module_cb()->module_feedkey(keysym, kev_state);
+        return check_key_press(keysym, kev_state, FALSE);
+      gboolean response = module_cb()->module_feedkey(keysym, kev_state);
+      if (response)
+	hide_win_gtab();
+      else
+	if (current_CS->b_half_full_char)
+	  return check_key_press(keysym, kev_state, full_char_proc(keysym));
+      return check_key_press(keysym, kev_state, response);
+    }
     default:
-      return feedkey_gtab(keysym, kev_state);
+      return check_key_press(keysym, kev_state, feedkey_gtab(keysym, kev_state));
   }
 
-  return FALSE;
+  return check_key_press(keysym, kev_state, FALSE);
 }
 
 int feedkey_pp_release(KeySym xkey, int kbstate);
