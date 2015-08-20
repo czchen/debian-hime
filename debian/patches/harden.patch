@@ -1,9 +1,9 @@
 Description: Hardening build
 ---
 Forwarded: https://github.com/hime-ime/hime/pull/489
---- hime-0.9.10.orig/configure
-+++ hime-0.9.10/configure
-@@ -495,6 +495,8 @@ echo "himelibdir=\$(libdir)/hime" >> con
+--- a/configure
++++ b/configure
+@@ -552,6 +552,8 @@
  echo "includedir=\$(DESTDIR)$includedir" >> config.mak
  echo "LDFLAGS_ENV=$LDFLAGS" >> config.mak
  echo "LDFLAGS=$LDFLAGS -Wl,--as-needed -lX11 -lm" >> config.mak
@@ -12,9 +12,9 @@ Forwarded: https://github.com/hime-ime/hime/pull/489
  if [ $FREEBSD -eq 0 ]; then
  	echo "LDFLAGS+=$GTKLDFLAGS -lX11 -ldl" >> config.mak
  else
---- hime-0.9.10.orig/data/Makefile
-+++ hime-0.9.10/data/Makefile
-@@ -4,7 +4,7 @@ SRC_DIR       = ../src
+--- a/data/Makefile
++++ b/data/Makefile
+@@ -4,7 +4,7 @@
  IM_CLIENT_DIR = $(SRC_DIR)/im-client
  
  .SUFFIXES:	.kbmsrc .kbm .cin .gtab
@@ -23,7 +23,7 @@ Forwarded: https://github.com/hime-ime/hime/pull/489
  export HIME_NO_RELOAD=
  
  DATA=pho.tab2 tsin32.idx gtab.list \
-@@ -83,11 +83,11 @@ pin-juyin.xlt: $(PIN_JUYIN) pin-juyin.sr
+@@ -83,11 +83,11 @@
  
  extr1:	extr1.c
  	@echo "building $@ ..."
@@ -37,8 +37,8 @@ Forwarded: https://github.com/hime-ime/hime/pull/489
  
  tsin-1.src:	extr1
  	./extr1 > $@
---- hime-0.9.10.orig/src/IMdkit/lib/Makefile
-+++ hime-0.9.10/src/IMdkit/lib/Makefile
+--- a/src/IMdkit/lib/Makefile
++++ b/src/IMdkit/lib/Makefile
 @@ -1,7 +1,7 @@
  include ../../../config.mak
  
@@ -48,7 +48,7 @@ Forwarded: https://github.com/hime-ime/hime/pull/489
  ifeq ($(FREEBSD), 0)
    INC = -I../include -I/usr/X11R6/include
  else
-@@ -21,7 +21,7 @@ libXimd.a: $(OBJ)
+@@ -21,7 +21,7 @@
  
  .c.o:
  	@echo "  $< -> $@"
@@ -57,9 +57,9 @@ Forwarded: https://github.com/hime-ime/hime/pull/489
  
  clean:
  	@echo "clean up"
---- hime-0.9.10.orig/src/Makefile
-+++ hime-0.9.10/src/Makefile
-@@ -137,22 +137,22 @@ PROGS_CV  = kbmcv pin-juyin
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -137,22 +137,22 @@
  
  .cpp.o:
  	@echo "  $< -> $@"
@@ -88,7 +88,7 @@ Forwarded: https://github.com/hime-ime/hime/pull/489
  
  
  all: $(PROGS) $(PROGS_SYM) $(DATA) $(PROGS_CV)
-@@ -173,28 +173,28 @@ im-client/libhime-im-client.so:
+@@ -174,28 +174,28 @@
  hime: $(OBJS) $(IMdkitLIB) $(OBJ_IMSRV)
  	@echo "linking $@ ..."
  ifeq ($(FREEBSD), 0)
@@ -123,7 +123,7 @@ Forwarded: https://github.com/hime-ime/hime/pull/489
  	@rm -f core.*
  
  hime-trad2sim:  hime-sim2trad
-@@ -203,48 +203,48 @@ hime-trad2sim:  hime-sim2trad
+@@ -204,48 +204,48 @@
  hime-setup: $(OBJS_hime_setup) im-client/libhime-im-client.so
  	@echo "linking $@ ..."
  	@rm -f core.*
@@ -182,7 +182,7 @@ Forwarded: https://github.com/hime-ime/hime/pull/489
  
  hime-kbm-toggle: hime-gb-toggle
  	ln -sf hime-gb-toggle $@
-@@ -260,15 +260,15 @@ hime-sim: hime-gb-toggle
+@@ -261,15 +261,15 @@
  
  hime-message: $(OBJS_hime_message) im-client/libhime-im-client.so
  	@echo "linking $@ ..."
@@ -201,7 +201,7 @@ Forwarded: https://github.com/hime-ime/hime/pull/489
  
  install:
  	install -d $(bindir)
-@@ -303,7 +303,7 @@ clean:
+@@ -306,7 +306,7 @@
  
  .depend:
  	@echo "building $@ ..."
@@ -210,9 +210,9 @@ Forwarded: https://github.com/hime-ime/hime/pull/489
  
  
  
---- hime-0.9.10.orig/src/gtk-im/Makefile
-+++ hime-0.9.10/src/gtk-im/Makefile
-@@ -22,17 +22,17 @@ CFLAGS = $(OPTFLAGS) $(EXTRA_INC) $(GTKI
+--- a/src/gtk-im/Makefile
++++ b/src/gtk-im/Makefile
+@@ -22,17 +22,17 @@
  
  .c.o:
  	@echo "  $< -> $@"
@@ -233,7 +233,7 @@ Forwarded: https://github.com/hime-ime/hime/pull/489
  	@rm -f core.*
  
  clean:
-@@ -55,6 +55,6 @@ install:
+@@ -55,6 +55,6 @@
  
  .depend:
  	@echo "building $@ ..."
@@ -241,9 +241,9 @@ Forwarded: https://github.com/hime-ime/hime/pull/489
 +	$(CC) $(CPPFLAGS) $(CFLAGS) -MM *.c > $@
  
  include .depend
---- hime-0.9.10.orig/src/gtk3-im/Makefile
-+++ hime-0.9.10/src/gtk3-im/Makefile
-@@ -3,7 +3,7 @@ include ../../config.mak
+--- a/src/gtk3-im/Makefile
++++ b/src/gtk3-im/Makefile
+@@ -3,7 +3,7 @@
  OBJS = imhime.o gtkimcontexthime.o
  GTK3IM=gtk-3.0/immodules
  GTKINC=`pkg-config --cflags gtk+-3.0`
@@ -252,7 +252,7 @@ Forwarded: https://github.com/hime-ime/hime/pull/489
  GTK3_LIBDIR=`pkg-config --variable=libdir gtk+-3.0`
  GTK3_BINARY_VERSION=`pkg-config --variable=gtk_binary_version gtk+-3.0`
  MODULEDIR=$(DESTDIR)/$(GTK3_LIBDIR)/gtk-3.0/$(GTK3_BINARY_VERSION)/immodules
-@@ -17,22 +17,22 @@ EXTRA_INC=-I/sw/include
+@@ -17,22 +17,22 @@
  endif
  
  .SUFFIXES:	.c .o .E
@@ -279,7 +279,7 @@ Forwarded: https://github.com/hime-ime/hime/pull/489
  	@rm -f core.*
  
  clean:
-@@ -55,6 +55,6 @@ install:
+@@ -55,6 +55,6 @@
  
  .depend:
  	@echo "building $@ ..."
@@ -287,9 +287,9 @@ Forwarded: https://github.com/hime-ime/hime/pull/489
 +	$(CC) $(CPPFLAGS) $(CFLAGS) -MM *.c > $@
  
  include .depend
---- hime-0.9.10.orig/src/im-client/Makefile
-+++ hime-0.9.10/src/im-client/Makefile
-@@ -5,7 +5,7 @@ SOFILEVER=libhime-im-client.so.1.2.4
+--- a/src/im-client/Makefile
++++ b/src/im-client/Makefile
+@@ -5,7 +5,7 @@
  
  .SUFFIXES:      .c .o .E .cpp
  WALL=-Wall
@@ -298,7 +298,7 @@ Forwarded: https://github.com/hime-ime/hime/pull/489
          -DCLIENT_LIB=1 -DHIME_BIN_DIR=\"$(HIME_BIN_DIR)\" -DUNIX=1 \
          -DHIME_TABLE_DIR=\"$(HIME_TABLE_DIR)\" \
          -DFREEBSD=$(FREEBSD) -fPIC
-@@ -13,23 +13,23 @@ OBJS = hime-im-client.o hime-send.o im-a
+@@ -13,23 +13,23 @@
  
  .cpp.E:
  	@echo "  $< -> $@"
@@ -327,7 +327,7 @@ Forwarded: https://github.com/hime-ime/hime/pull/489
  endif
  	ln -sf $(SOFILEVER) $(SOFILE)
  	ln -sf $(SOFILEVER) $(SOFILE).1
-@@ -45,26 +45,26 @@ install:
+@@ -45,26 +45,26 @@
  
  hime-conf.o: ../hime-conf.c
  	@echo "  $^ -> $@"
@@ -360,33 +360,9 @@ Forwarded: https://github.com/hime-ime/hime/pull/489
 +	$(CCX) $(CPPFLAGS) $(CFLAGS) -MM *.c > $@
  
  include .depend
---- hime-0.9.10.orig/src/modules/Makefile
-+++ hime-0.9.10/src/modules/Makefile
-@@ -19,18 +19,18 @@ all:	$(HIME_MODULE)
- anthy_module_so = anthy.pico
- anthy-module.so: $(anthy_module_so)
- 	@echo "linking $@ ..."
--	@$(CCLD) $(SO_FLAGS) -o $@ $(anthy_module_so) $(LDFLAGS) -lanthy
-+	$(CCLD) $(SO_FLAGS) -o $@ $(anthy_module_so) $(LDFLAGS) -lanthy
- 
- intcode_module_so = intcode.pico win-int.pico
- intcode-module.so: $(intcode_module_so)
- 	@echo "linking $@ ..."
--	@$(CCLD) $(SO_FLAGS) -o $@ $(intcode_module_so) $(LDFLAGS)
-+	$(CCLD) $(SO_FLAGS) -o $@ $(intcode_module_so) $(LDFLAGS)
- 
- chewing_module_obj = chewing-conf.pico
- chewing_module_so = chewing.pico hime-setup-chewing.pico
- chewing-module.so: $(chewing_module_obj) $(chewing_module_so)
- 	@echo "linking $@ ..."
--	@$(CCLD) $(SO_FLAGS) -o $@ $(chewing_module_obj) $(chewing_module_so) $(LDFLAGS) $(shell pkg-config --cflags --libs chewing)
-+	$(CCLD) $(SO_FLAGS) -o $@ $(chewing_module_obj) $(chewing_module_so) $(LDFLAGS) $(shell pkg-config --cflags --libs chewing)
- 
- install:
- 	install $(HIME_MODULE) $(himelibdir)
---- hime-0.9.10.orig/src/qt-im/Makefile
-+++ hime-0.9.10/src/qt-im/Makefile
-@@ -3,28 +3,28 @@ QT=qt3
+--- a/src/qt-im/Makefile
++++ b/src/qt-im/Makefile
+@@ -3,28 +3,28 @@
  QTIM=$(QT)/plugins/inputmethods
  IMMODULES=$(libdir)/$(QTIM)
  INCS=-I../im-client -I/usr/include `pkg-config --cflags qt-mt` -I/usr/include/Xft2/X11/Xft  -I/usr/include/fontconfig -I/usr/include/freetype2
@@ -421,9 +397,9 @@ Forwarded: https://github.com/hime-ime/hime/pull/489
  	@rm -f core.*
  
  install:
---- hime-0.9.10.orig/src/qt4-im/Makefile
-+++ hime-0.9.10/src/qt4-im/Makefile
-@@ -5,24 +5,24 @@ ifeq ($(FREEBSD), 0)
+--- a/src/qt4-im/Makefile
++++ b/src/qt4-im/Makefile
+@@ -5,24 +5,24 @@
  else
    INCS=-I../im-client -I/usr/local/include `pkg-config QtCore QtGui --cflags`
  endif
@@ -453,7 +429,7 @@ Forwarded: https://github.com/hime-ime/hime/pull/489
  
  im-hime.so: $(OBJS)
  	@echo "linking $@ ..."
-@@ -40,6 +40,6 @@ clean:
+@@ -40,6 +40,6 @@
  
  .depend:
  	@echo "building $@ ..."
@@ -461,8 +437,8 @@ Forwarded: https://github.com/hime-ime/hime/pull/489
 +	$(CXX) $(CXXFLAGS) -MM *.cpp > $@
  
  include .depend
---- hime-0.9.10.orig/src/suffixes-rule
-+++ hime-0.9.10/src/suffixes-rule
+--- a/src/suffixes-rule
++++ b/src/suffixes-rule
 @@ -2,25 +2,25 @@
  
  .cpp.o:

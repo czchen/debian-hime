@@ -12,17 +12,9 @@ Forwarded: <no|not-needed|url proving that it has been forwarded>
 Reviewed-By: <name and email of someone who approved the patch>
 Last-Update: <YYYY-MM-DD>
 
---- hime-0.9.10.orig/configure
-+++ hime-0.9.10/configure
-@@ -27,6 +27,7 @@ if [ "$1" = "-h" -o "$1" = "--help" -o "
-     echo "  --qt3-moc-path=PATH       : specify the path of \"moc\" command for Qt 3.x"
-     echo "  --qt4-moc-path=PATH       : specify the path of \"moc\" command for Qt 4.x"
-     echo "  --qt4-im-module-path=PATH : specify the install path for Qt 4.x im-module."
-+    echo "  --himelibdir=dir          : runtime path of hime's *.so"
-     echo ""
-     exit
- fi
-@@ -179,6 +180,8 @@ for opt do
+--- a/configure
++++ b/configure
+@@ -198,6 +198,8 @@
    ;;
    --disable-lib64) LIB='lib'
    ;;
@@ -31,7 +23,7 @@ Last-Update: <YYYY-MM-DD>
    esac
  done
  
-@@ -460,6 +463,11 @@ libdir=$prefix/$LIB
+@@ -517,6 +519,11 @@
  includedir=$prefix/include
  optdir=/opt
  
@@ -43,7 +35,7 @@ Last-Update: <YYYY-MM-DD>
  if [ -z "$CFLAGS" ]; then
    OPTFLAGS="-Wall"
  else
-@@ -491,7 +499,7 @@ echo "datadir=\$(DESTDIR)$datadir" >> co
+@@ -548,7 +555,7 @@
  echo "datadir_r=\$(DESTDIR)$datadir" >> config.mak
  echo "filterdir=\$(datadir_r)/hime/filter" >> config.mak
  echo "libdir=\$(DESTDIR)$libdir" >> config.mak
