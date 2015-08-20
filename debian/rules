@@ -6,8 +6,12 @@
 
 DPKG_EXPORT_BUILDFLAGS = 1
 include /usr/share/dpkg/buildflags.mk
+
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+
 CFLAGS+=$(CPPFLAGS)
 CXXFLAGS+=$(CPPFLAGS)
+
 
 GTK2_IMMODULES := $(shell pkg-config --variable=libdir gtk+-2.0)/libgtk2.0-0/gtk-query-immodules-2.0
 GTK3_IMMODULES := $(shell pkg-config --variable=libdir gtk+-3.0)/libgtk-3-0/gtk-query-immodules-3.0
