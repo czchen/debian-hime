@@ -1,10 +1,11 @@
-hime (0.9.10-8) unstable; urgency=medium
+hime (0.9.10+20150820-1) unstable; urgency=medium
 
-  * Support Multi-Arch
-    * Add --himelibdir
-    * Add libhime, hime-gtk2-immodule
-    * Add postinst, postrm scripts for GTK modules
-  * Update Vcs-Browser
+  * Use git snapshot for Qt 5.
+  * Support Multi-Arch:
+    * Add --himelibdir.
+    * Add libhime, hime-gtk2-immodule.
+    * Add postinst, postrm scripts for GTK modules.
+  * Update Vcs-Browser.
 
  -- ChangZhuo Chen (陳昌倬) <czchen@gmail.com>  Sun, 07 Jun 2015 22:42:17 +0800
 
