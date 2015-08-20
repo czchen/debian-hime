@@ -17,6 +17,8 @@ Build-Depends: debhelper (>= 9.0.0),
                libgtk-3-dev,
                libqt4-dev,
                libxtst-dev,
+               qtbase5-private-dev,
+               qtchooser,
 Vcs-Git: git://anonscm.debian.org/pkg-ime/hime.git
 Vcs-Browser: http://anonscm.debian.org/cgit/pkg-ime/hime.git
 
@@ -34,6 +36,7 @@ Recommends: im-config | im-switch,
 Suggests: hime-anthy,
           hime-chewing,
           hime-qt4-immodule,
+          hime-qt5-immodule,
           gcin-voice,
 Description: GTK+ based input method for Chinese users
  HIME Input Method Editor is a input method platform, which is forked
@@ -45,6 +48,7 @@ Description: GTK+ based input method for Chinese users
   * hime-gtk2-immodule for GTK2
   * hime-gtk3-immodule for GTK3
   * hime-qt4-immodule for Qt4
+  * hime-qt5-immodule for Qt5
 
 Package: hime-data
 Architecture: all
@@ -125,6 +129,18 @@ Description: Qt4 input method module with HIME as backend
  from the famous gcin input method.
  .
  This package is the Qt4 input method module (immodule) for HIME.
+
+Package: hime-qt5-immodule
+Architecture: any
+Multi-Arch: same
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+         hime (>= ${source:Version}),
+Description: Qt4 input method module with HIME as backend
+ HIME Input Method Editor is a input method platform, which is forked
+ from the famous gcin input method.
+ .
+ This package is the Qt5 input method module (immodule) for HIME.
 
 Package: hime-anthy
 Architecture: any
