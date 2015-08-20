@@ -25,7 +25,11 @@ override_dh_auto_clean:
 	rm config.mak
 
 override_dh_auto_configure:
-	dh_auto_configure -- --himelibdir=/usr/lib/$(DEB_HOST_MULTIARCH)/hime
+	dh_auto_configure -- \
+		--himelibdir=/usr/lib/$(DEB_HOST_MULTIARCH)/hime \
+		--qt4-moc-path="qtchooser -run-tool=moc -qt=4" \
+		--qt5-moc-path="qtchooser -run-tool=moc -qt=5" \
+		$(NULL)
 
 	sed 's,%%GTK_QUERY_IMMODULES%%,$(GTK2_IMMODULES),g' $(CURDIR)/debian/hime-gtk-immodule.postinst.in > $(CURDIR)/debian/hime-gtk2-immodule.postinst
 	sed 's,%%GTK_QUERY_IMMODULES%%,$(GTK2_IMMODULES),g' $(CURDIR)/debian/hime-gtk-immodule.postrm.in > $(CURDIR)/debian/hime-gtk2-immodule.postrm
