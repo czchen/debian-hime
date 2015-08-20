@@ -136,7 +136,7 @@ Multi-Arch: same
 Depends: ${misc:Depends},
          ${shlibs:Depends},
          hime (>= ${source:Version}),
-Description: Qt4 input method module with HIME as backend
+Description: Qt5 input method module with HIME as backend
  HIME Input Method Editor is a input method platform, which is forked
  from the famous gcin input method.
  .
